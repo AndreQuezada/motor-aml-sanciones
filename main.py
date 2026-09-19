@@ -7,6 +7,10 @@ from deep_translator import GoogleTranslator
 
 app = FastAPI(title="API de Antecedentes", version="1.0")
 
+@app.get("/")
+def ping():
+    return {"mensaje": "El motor AML está despierto y funcionando"}
+
 # Conexión maestra a MongoDB Atlas
 MONGO_URI = "mongodb+srv://quezors191_db_user:gUCE0yKkTB4kV13L@admin.xdbxdz9.mongodb.net/?appName=admin"
 client = MongoClient(MONGO_URI)
