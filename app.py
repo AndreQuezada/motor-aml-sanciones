@@ -51,7 +51,7 @@ if boton:
     else:
         with st.spinner("Buscando en bases de datos internacionales..."):
             try:
-                res = requests.post("https://api-antecedentes-wotq.onrender.com/api/consultar", json={"cedula": cedula, "nombre": nombre, "apellido": apellido}, timeout=25)
+                res = requests.post("https://api-antecedentes-wotq.onrender.com/api/consultar", json={"cedula": cedula, "nombre": nombre, "apellido": apellido}, timeout=90)
                 if res.status_code == 200:
                     datos = res.json()
                     
