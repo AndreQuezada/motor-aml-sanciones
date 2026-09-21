@@ -9,10 +9,10 @@ with st.sidebar:
     # Sección Colombia
     st.subheader("🇨🇴 Colombia")
     st.markdown("""
-    * 🔗 [Policía Nacional (Penales)](https://antecedentes.policia.gov.co:7005/WebJudicial/)
+    * 🔗 [Policía Nacional (Penales)](https://antecedentes.policia.gov.co/)
     * 🔗 [Contraloría (Resp. Fiscal)](https://www.contraloria.gov.co/control-fiscal/responsabilidad-fiscal/certificado-de-antecedentes-fiscales)
     * 🔗 [Procuraduría (Disciplinarios)](https://www.procuraduria.gov.co/Pages/Consulta-de-Antecedentes.aspx)
-    * 🔗 [Contaduría General (BDME)](https://eris.contaduria.gov.co/BDME/#PanelPrincipal)
+    * 🔗 [Contaduría General (BDME)](https://www.contaduria.gov.co/acerca-de-bdme)
     """)
     
     st.divider()
@@ -20,10 +20,10 @@ with st.sidebar:
     # Sección Ecuador
     st.subheader("🇪🇨 Ecuador")
     st.markdown("""
-    * 🔗 [Min. del Interior (Penales)](https://certificadoantecedentes.ministeriodelinterior.gob.ec/)
-    * 🔗 [Función Judicial (SATJE)](http://consultas.funcionjudicial.gob.ec/informacionjudicial/public/informacion.jsf)
-    * 🔗 [Contraloría General](https://www.contraloria.gob.ec/Servicios/CertificadoResponsabilidades)
-    * 🔗 [Ministerio del Trabajo](https://sut.trabajo.gob.ec/impedimentos/generar_certificado.xhtml)
+    * 🔗 [Min. del Interior (Penales)](https://certificados.ministeriodelinterior.gob.ec/gestorcertificados/antecedentes/)
+    * 🔗 [Función Judicial (SATJE)](https://procesosjudiciales.funcionjudicial.gob.ec/)
+    * 🔗 [Contraloría General](https://www.contraloria.gob.ec/) 
+    * 🔗 [Ministerio del Trabajo (SUT)](https://sut.trabajo.gob.ec/)
     """)
 import requests
 
