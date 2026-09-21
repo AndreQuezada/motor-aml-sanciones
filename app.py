@@ -1,18 +1,19 @@
 import streamlit as st
 # --- BARRA LATERAL: VERIFICACIÓN OFICIAL ---
+# --- BARRA LATERAL: VERIFICACIÓN OFICIAL DIRECTA ---
 with st.sidebar:
     st.title("🏛️ Verificación Nacional")
-    st.markdown("Portales estatales de consulta obligatoria (Requieren validación manual/Captcha).")
+    st.markdown("Enlaces directos a los formularios oficiales de consulta.")
     
     st.divider()
     
     # Sección Colombia
     st.subheader("🇨🇴 Colombia")
     st.markdown("""
-    * 🔗 [Policía Nacional (Penales)](https://antecedentes.policia.gov.co/)
+    * 🔗 [Policía Nacional (Penales)](https://antecedentes.policia.gov.co:7005/WebJudicial/)
     * 🔗 [Contraloría (Resp. Fiscal)](https://www.contraloria.gov.co/control-fiscal/responsabilidad-fiscal/certificado-de-antecedentes-fiscales)
     * 🔗 [Procuraduría (Disciplinarios)](https://www.procuraduria.gov.co/Pages/Consulta-de-Antecedentes.aspx)
-    * 🔗 [Contaduría General (BDME)](https://www.contaduria.gov.co/acerca-de-bdme)
+    * 🔗 [Contaduría General (BDME)](https://eris.contaduria.gov.co/BDME/#PanelPrincipal)
     """)
     
     st.divider()
@@ -20,10 +21,10 @@ with st.sidebar:
     # Sección Ecuador
     st.subheader("🇪🇨 Ecuador")
     st.markdown("""
-    * 🔗 [Min. del Interior (Penales)](https://certificados.ministeriodelinterior.gob.ec/gestorcertificados/antecedentes/)
-    * 🔗 [Función Judicial (SATJE)](https://procesosjudiciales.funcionjudicial.gob.ec/)
-    * 🔗 [Contraloría General](https://www.contraloria.gob.ec/) 
-    * 🔗 [Ministerio del Trabajo (SUT)](https://sut.trabajo.gob.ec/)
+    * 🔗 [Min. del Interior (Penales)](https://certificadoantecedentes.ministeriodelinterior.gob.ec/)
+    * 🔗 [Función Judicial (Causas / SATJE)](http://consultas.funcionjudicial.gob.ec/informacionjudicial/public/informacion.jsf)
+    * 🔗 [Contraloría General (Responsabilidades)](https://www.contraloria.gob.ec/Servicios/CertificadoResponsabilidades)
+    * 🔗 [Min. del Trabajo (Impedimentos SUT)](https://sut.trabajo.gob.ec/impedimentos/generar_certificado.xhtml)
     """)
 import requests
 
