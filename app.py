@@ -1,4 +1,30 @@
 import streamlit as st
+# --- BARRA LATERAL: VERIFICACIÓN OFICIAL ---
+with st.sidebar:
+    st.title("🏛️ Verificación Nacional")
+    st.markdown("Portales estatales de consulta obligatoria (Requieren validación manual/Captcha).")
+    
+    st.divider()
+    
+    # Sección Colombia
+    st.subheader("🇨🇴 Colombia")
+    st.markdown("""
+    * 🔗 [Policía Nacional (Penales)](https://antecedentes.policia.gov.co:7005/WebJudicial/)
+    * 🔗 [Contraloría (Resp. Fiscal)](https://www.contraloria.gov.co/control-fiscal/responsabilidad-fiscal/certificado-de-antecedentes-fiscales)
+    * 🔗 [Procuraduría (Disciplinarios)](https://www.procuraduria.gov.co/Pages/Consulta-de-Antecedentes.aspx)
+    * 🔗 [Contaduría General (BDME)](https://eris.contaduria.gov.co/BDME/#PanelPrincipal)
+    """)
+    
+    st.divider()
+    
+    # Sección Ecuador
+    st.subheader("🇪🇨 Ecuador")
+    st.markdown("""
+    * 🔗 [Min. del Interior (Penales)](https://certificadoantecedentes.ministeriodelinterior.gob.ec/)
+    * 🔗 [Función Judicial (SATJE)](http://consultas.funcionjudicial.gob.ec/informacionjudicial/public/informacion.jsf)
+    * 🔗 [Contraloría General](https://www.contraloria.gob.ec/Servicios/CertificadoResponsabilidades)
+    * 🔗 [Ministerio del Trabajo](https://sut.trabajo.gob.ec/impedimentos/generar_certificado.xhtml)
+    """)
 import requests
 
 # 1. Configuración de página limpia y amplia
