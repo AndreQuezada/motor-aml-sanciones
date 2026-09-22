@@ -7,6 +7,7 @@ import re
 app = FastAPI(title="API de Antecedentes", version="1.0")
 
 @app.get("/")
+@app.head("/")
 def ping():
     # El bot visita esta ruta. Hacemos una lectura mínima para mantener a MongoDB despierto.
     coleccion.find_one({}, {"_id": 1})
