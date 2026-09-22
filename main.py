@@ -159,18 +159,22 @@ def consultar_antecedentes(consulta: ConsultaRequest):
             })
     else:
         # =========================================================
-        # 2. PLAN B: BÚSQUEDA DIFUSA IA OPTIMIZADA (Para evitar colapso de RAM)
+        # 2. PLAN B: BÚSQUEDA DIFUSA IA OPTIMIZADA (Blindaje Anti-Colapso)
         # =========================================================
         nombre_completo_input = f"{nombre} {apellido}".strip()
         
-        # Le decimos a Mongo que nos envíe SOLO los registros que contengan al menos
-        # una de las palabras escritas, y limitamos a 100 resultados para no asfixiar la RAM
-        query_aproximada = {
-            "$or": [
-                {"nombre_completo": {"$regex": nombre, "$options": "i"}},
-                {"nombre_completo": {"$regex": apellido, "$options": "i"}}
-            ]
-        }
+        # Blindaje: Evitar buscar campos vacíos que colapsan la base de datos
+        condiciones = []
+        if nombre:
+            condiciones.append({"nombre_completo": {"$regex": nombre, "$options": "i"}})
+        if apellido:
+            condiciones.append({"nombre_completo": {"$regex": apellido, "$options": "i"}})
+            
+        # Si de casualidad todo está vacío, detenemos la búsqueda para no trabar el servidor
+        if not condiciones:
+            return {"estado": "LIMPIO", "mensaje": "Ingrese datos para buscar.", "coincidencias": []}
+            
+        query_aproximada = {"$or": condiciones}
         
         # En vez de traer 20,000 registros, traemos máximo 100 muy probables
         registros_db = list(coleccion.find(query_aproximada, {"_id": 0, "nombre_completo": 1, "programas": 1, "fuente": 1, "observaciones": 1}).limit(100))
