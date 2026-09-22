@@ -121,7 +121,7 @@ if boton:
                                 
                                 st.divider() # Línea entre diferentes resultados
                 else:
-                    st.error("Error de comunicación con el motor central.")
+                    st.error(f"🚨 Error del Cerebro (Código {res.status_code}): {res.text}")
             
             # EL ESCUDO CONTRA CONGELAMIENTOS INFINITOS
             except requests.exceptions.Timeout:
