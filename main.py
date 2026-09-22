@@ -3,7 +3,6 @@ from pydantic import BaseModel
 from pymongo import MongoClient
 from thefuzz import process, fuzz
 import re
-from deep_translator import GoogleTranslator
 
 app = FastAPI(title="API de Antecedentes", version="1.0")
 
@@ -62,7 +61,7 @@ def generar_resumen_espanol(texto_crudo):
         
     texto = texto_crudo
     
-    # 1. FILTRO FORZADO
+    # 1. FILTRO FORZADO OFFLINE (Traducción instantánea sin depender de Google)
     diccionario_forzado = {
         "DOB": "Fecha de nacimiento:", "POB": "Lugar de nacimiento:", 
         "a.k.a.": "Alias:", "Gender": "Género:", "Male": "Masculino", "Female": "Femenino",
@@ -77,15 +76,6 @@ def generar_resumen_espanol(texto_crudo):
     }
     for ingles, espanol in diccionario_forzado.items():
         texto = texto.replace(ingles, espanol)
-
-    # 2. TRADUCCIÓN CON IA
-    texto = texto[:4500] if len(texto) > 4500 else texto
-    try:
-        texto_traducido = GoogleTranslator(source='auto', target='es').translate(texto)
-        if texto_traducido:
-            texto = texto_traducido
-    except Exception as e:
-        print(f"⚠️ Advertencia IA de traducción: {e}") 
 
     # 3. Limpieza de fechas
     texto = re.sub(r'(\d{4})-(\d{2})-(\d{2})', r'\3/\2/\1', texto)
@@ -159,24 +149,21 @@ def consultar_antecedentes(consulta: ConsultaRequest):
             })
     else:
         # =========================================================
-        # 2. PLAN B: BÚSQUEDA DIFUSA IA OPTIMIZADA (Blindaje Anti-Colapso)
+        # 2. PLAN B: BÚSQUEDA DIFUSA IA OPTIMIZADA
         # =========================================================
         nombre_completo_input = f"{nombre} {apellido}".strip()
         
-        # Blindaje: Evitar buscar campos vacíos que colapsan la base de datos
         condiciones = []
         if nombre:
             condiciones.append({"nombre_completo": {"$regex": nombre, "$options": "i"}})
         if apellido:
             condiciones.append({"nombre_completo": {"$regex": apellido, "$options": "i"}})
             
-        # Si de casualidad todo está vacío, detenemos la búsqueda para no trabar el servidor
         if not condiciones:
             return {"estado": "LIMPIO", "mensaje": "Ingrese datos para buscar.", "coincidencias": []}
             
         query_aproximada = {"$or": condiciones}
         
-        # En vez de traer 20,000 registros, traemos máximo 100 muy probables
         registros_db = list(coleccion.find(query_aproximada, {"_id": 0, "nombre_completo": 1, "programas": 1, "fuente": 1, "observaciones": 1}).limit(100))
         
         lista_nombres = [reg["nombre_completo"] for reg in registros_db if "nombre_completo" in reg]
