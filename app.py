@@ -1,5 +1,4 @@
 import streamlit as st
-# --- BARRA LATERAL: VERIFICACIÓN OFICIAL ---
 # --- BARRA LATERAL: VERIFICACIÓN OFICIAL DIRECTA ---
 with st.sidebar:
     st.title("🏛️ Verificación Nacional")
@@ -21,10 +20,9 @@ with st.sidebar:
     # Sección Ecuador
     st.subheader("🇪🇨 Ecuador")
     st.markdown("""
-    * 🔗 [Min. del Interior (Penales)](https://certificadoantecedentes.ministeriodelinterior.gob.ec/)
+    * 🔗 [Min. del Interior (Penales)](https://certificados.ministeriodelinterior.gob.ec/gestorcertificados/antecedentes/)
     * 🔗 [Función Judicial (Causas / SATJE)](http://consultas.funcionjudicial.gob.ec/informacionjudicial/public/informacion.jsf)
     * 🔗 [Contraloría General (Responsabilidades)](https://www.contraloria.gob.ec/Servicios/CertificadoResponsabilidades)
-    * 🔗 [Min. del Trabajo (Impedimentos SUT)](https://sut.trabajo.gob.ec/impedimentos/generar_certificado.xhtml)
     """)
 import requests
 
