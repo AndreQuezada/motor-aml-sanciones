@@ -70,15 +70,20 @@ with col_centro:
 
 # 5. Procesamiento y Resultados Visuales
 if boton:
-    if not nombre or not apellido:
-        st.warning("⚠️ Por favor, ingresa el nombre y el apellido para realizar la búsqueda.")
+    if not nombre and not apellido:
+        st.warning("⚠️ Por favor, ingresa el nombre o el apellido para realizar la búsqueda.")
     else:
         with st.spinner("Buscando en bases de datos internacionales..."):
             try:
-                res = requests.post("https://api-antecedentes-wotq.onrender.com/api/consultar", json={"cedula": cedula, "nombre": nombre, "apellido": apellido}, timeout=90)
+                # AQUÍ ESTÁ EL ESCUDO: timeout=20 segundos
+                res = requests.post(
+                    "https://api-antecedentes-wotq.onrender.com/api/consultar", 
+                    json={"cedula": cedula, "nombre": nombre, "apellido": apellido}, 
+                    timeout=20
+                )
+                
                 if res.status_code == 200:
                     datos = res.json()
-                    
                     st.divider() # Línea separadora antes de los resultados
                     
                     if datos["estado"] == "LIMPIO":
@@ -95,7 +100,7 @@ if boton:
                             with st.container():
                                 st.subheader(f"Objetivo #{idx + 1}: {coincidencia['nombre_sancionado']}")
                                 
-                                # ¡NUEVO! Barra de progreso visual para la similitud
+                                # Barra de progreso visual para la similitud
                                 st.caption(f"Nivel de Similitud: {coincidencia['similitud_porcentaje']}%")
                                 st.progress(int(coincidencia['similitud_porcentaje']))
                                 
@@ -115,6 +120,11 @@ if boton:
                                     st.write(coincidencia['detalles'].get('antecedentes_original', ''))
                                 
                                 st.divider() # Línea entre diferentes resultados
-                                
-            except Exception:
-                st.error("❌ Error conectando con el motor de búsqueda (Verifica que FastAPI esté encendido).")
+                else:
+                    st.error("Error de comunicación con el motor central.")
+            
+            # EL ESCUDO CONTRA CONGELAMIENTOS INFINITOS
+            except requests.exceptions.Timeout:
+                st.warning("⏳ El servidor central se está despertando tras un periodo de inactividad. Por favor, espera 5 segundos y vuelve a darle clic a Buscar.")
+            except Exception as e:
+                st.error(f"❌ Error de conexión general: Verifica tu internet o los servidores.")
