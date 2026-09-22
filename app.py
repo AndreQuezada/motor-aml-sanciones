@@ -1,5 +1,6 @@
 import streamlit as st
 # --- BARRA LATERAL: VERIFICACIÓN OFICIAL DIRECTA ---
+# --- BARRA LATERAL: VERIFICACIÓN OFICIAL DIRECTA ---
 with st.sidebar:
     st.title("🏛️ Verificación Nacional")
     st.markdown("Enlaces directos a los formularios oficiales de consulta.")
@@ -12,7 +13,6 @@ with st.sidebar:
     * 🔗 [Policía Nacional (Penales)](https://antecedentes.policia.gov.co:7005/WebJudicial/)
     * 🔗 [Contraloría (Resp. Fiscal)](https://www.contraloria.gov.co/control-fiscal/responsabilidad-fiscal/certificado-de-antecedentes-fiscales)
     * 🔗 [Procuraduría (Disciplinarios)](https://www.procuraduria.gov.co/Pages/Consulta-de-Antecedentes.aspx)
-    * 🔗 [Contaduría General (BDME)](https://eris.contaduria.gov.co/BDME/#PanelPrincipal)
     """)
     
     st.divider()
@@ -22,7 +22,6 @@ with st.sidebar:
     st.markdown("""
     * 🔗 [Min. del Interior (Penales)](https://certificados.ministeriodelinterior.gob.ec/gestorcertificados/antecedentes/)
     * 🔗 [Función Judicial (Causas / SATJE)](http://consultas.funcionjudicial.gob.ec/informacionjudicial/public/informacion.jsf)
-    * 🔗 [Contraloría General (Responsabilidades)](https://www.contraloria.gob.ec/Servicios/CertificadoResponsabilidades)
     """)
 import requests
 
