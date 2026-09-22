@@ -62,7 +62,7 @@ def generar_resumen_espanol(texto_crudo):
         
     texto = texto_crudo
     
-    # 1. FILTRO FORZADO (Asegura el español 100% incluso si se cae el internet)
+    # 1. FILTRO FORZADO
     diccionario_forzado = {
         "DOB": "Fecha de nacimiento:", "POB": "Lugar de nacimiento:", 
         "a.k.a.": "Alias:", "Gender": "Género:", "Male": "Masculino", "Female": "Femenino",
@@ -78,7 +78,7 @@ def generar_resumen_espanol(texto_crudo):
     for ingles, espanol in diccionario_forzado.items():
         texto = texto.replace(ingles, espanol)
 
-    # 2. TRADUCCIÓN CON IA AUTOMÁTICA (Limitada a 4500 caracteres para evitar bloqueos)
+    # 2. TRADUCCIÓN CON IA
     texto = texto[:4500] if len(texto) > 4500 else texto
     try:
         texto_traducido = GoogleTranslator(source='auto', target='es').translate(texto)
@@ -87,10 +87,10 @@ def generar_resumen_espanol(texto_crudo):
     except Exception as e:
         print(f"⚠️ Advertencia IA de traducción: {e}") 
 
-    # 3. Limpieza de fechas estándar (YYYY-MM-DD a DD/MM/YYYY)
+    # 3. Limpieza de fechas
     texto = re.sub(r'(\d{4})-(\d{2})-(\d{2})', r'\3/\2/\1', texto)
 
-    # 4. Diccionario de países ISO para OpenSanctions
+    # 4. Diccionario de países ISO
     paises_iso = {
         "ru": "Rusia", "pt": "Portugal", "il": "Israel", "ve": "Venezuela", "ir": "Irán",
         "kp": "Corea del Norte", "sy": "Siria", "cu": "Cuba", "cn": "China", "af": "Afganistán",
@@ -107,7 +107,6 @@ def generar_resumen_espanol(texto_crudo):
         p = p.replace("Fecha de nacimiento: ", "Fecha de nacimiento: ").replace("Dob ", "Fecha de nacimiento: ")
         p = p.replace("Lugar de nacimiento: ", "Lugar de nacimiento: ").replace("Pob ", "Lugar de nacimiento: ")
 
-        # Traducción de códigos ISO de países
         if p.lower().startswith("nacionalidad:") or p.lower().startswith("ciudadanía:") or p.lower().startswith("ciudadano "):
             partes_split = p.split(":", 1)
             if len(partes_split) == 2:
@@ -129,8 +128,7 @@ def consultar_antecedentes(consulta: ConsultaRequest):
     coincidencias = []
     
     # =========================================================
-    # 1. BÚSQUEDA HÍBRIDA (Motor de Expresiones Regulares MongoDB)
-    # Busca el nombre y el apellido en cualquier parte del registro
+    # 1. BÚSQUEDA EXACTA (Motor Regex)
     # =========================================================
     query_directa = {
         "$and": [
@@ -139,7 +137,6 @@ def consultar_antecedentes(consulta: ConsultaRequest):
         ]
     }
     
-    # Esto busca directo en la nube sin descargar toda la base de datos
     resultados_exactos = list(coleccion.find(query_directa, {"_id": 0}).limit(3))
     
     if resultados_exactos:
@@ -162,33 +159,46 @@ def consultar_antecedentes(consulta: ConsultaRequest):
             })
     else:
         # =========================================================
-        # 2. PLAN B: BÚSQUEDA DIFUSA IA (Si hay errores ortográficos)
+        # 2. PLAN B: BÚSQUEDA DIFUSA IA OPTIMIZADA (Para evitar colapso de RAM)
         # =========================================================
-        nombre_completo_input = f"{nombre} {apellido}"
-        registros_db = list(coleccion.find({}, {"_id": 0, "nombre_completo": 1, "programas": 1, "fuente": 1, "observaciones": 1}))
+        nombre_completo_input = f"{nombre} {apellido}".strip()
+        
+        # Le decimos a Mongo que nos envíe SOLO los registros que contengan al menos
+        # una de las palabras escritas, y limitamos a 100 resultados para no asfixiar la RAM
+        query_aproximada = {
+            "$or": [
+                {"nombre_completo": {"$regex": nombre, "$options": "i"}},
+                {"nombre_completo": {"$regex": apellido, "$options": "i"}}
+            ]
+        }
+        
+        # En vez de traer 20,000 registros, traemos máximo 100 muy probables
+        registros_db = list(coleccion.find(query_aproximada, {"_id": 0, "nombre_completo": 1, "programas": 1, "fuente": 1, "observaciones": 1}).limit(100))
+        
         lista_nombres = [reg["nombre_completo"] for reg in registros_db if "nombre_completo" in reg]
         
-        resultados_fuzzy = process.extract(nombre_completo_input, lista_nombres, limit=3, scorer=fuzz.token_set_ratio)
-        
-        for nombre_encontrado, score in resultados_fuzzy:
-            if score >= 85:
-                detalles = [item for item in registros_db if item["nombre_completo"] == nombre_encontrado]
-                if detalles:
-                    d = detalles[0]
-                    textos_obs = str(d.get("observaciones", ""))
-                    if textos_obs == "No registrado": textos_obs = "No hay detalles públicos adicionales."
-                    
-                    coincidencias.append({
-                        "nombre_sancionado": nombre_encontrado,
-                        "similitud_porcentaje": score,
-                        "detalles": {
-                            "fuente": traducir_fuentes(d.get("fuente", "")), 
-                            "motivo_delito": traducir_motivos(d.get("programas", "No especificado")), 
-                            "programas_originales": d.get("programas", "No especificado"),
-                            "antecedentes_original": textos_obs,
-                            "resumen_espanol": generar_resumen_espanol(textos_obs)
-                        }
-                    })
+        if lista_nombres:
+            resultados_fuzzy = process.extract(nombre_completo_input, lista_nombres, limit=3, scorer=fuzz.token_set_ratio)
+            
+            for nombre_encontrado, score in resultados_fuzzy:
+                if score >= 85:
+                    detalles = [item for item in registros_db if item["nombre_completo"] == nombre_encontrado]
+                    if detalles:
+                        d = detalles[0]
+                        textos_obs = str(d.get("observaciones", ""))
+                        if textos_obs == "No registrado": textos_obs = "No hay detalles públicos adicionales."
+                        
+                        coincidencias.append({
+                            "nombre_sancionado": nombre_encontrado,
+                            "similitud_porcentaje": score,
+                            "detalles": {
+                                "fuente": traducir_fuentes(d.get("fuente", "")), 
+                                "motivo_delito": traducir_motivos(d.get("programas", "No especificado")), 
+                                "programas_originales": d.get("programas", "No especificado"),
+                                "antecedentes_original": textos_obs,
+                                "resumen_espanol": generar_resumen_espanol(textos_obs)
+                            }
+                        })
 
     if coincidencias:
         return {"estado": "ALERTA", "mensaje": "Se encontraron posibles coincidencias.", "coincidencias": coincidencias}
