@@ -8,7 +8,9 @@ app = FastAPI(title="API de Antecedentes", version="1.0")
 
 @app.get("/")
 def ping():
-    return {"mensaje": "El motor AML está despierto y funcionando"}
+    # El bot visita esta ruta. Hacemos una lectura mínima para mantener a MongoDB despierto.
+    coleccion.find_one({}, {"_id": 1})
+    return {"mensaje": "El motor AML y la Base de Datos están 100% activos"}
 
 # Conexión maestra a MongoDB Atlas
 MONGO_URI = "mongodb+srv://quezors191_db_user:gUCE0yKkTB4kV13L@admin.xdbxdz9.mongodb.net/?appName=admin"
