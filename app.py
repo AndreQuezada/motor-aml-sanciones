@@ -2,13 +2,13 @@ import streamlit as st
 # --- BARRA LATERAL: VERIFICACIÓN OFICIAL DIRECTA ---
 # --- BARRA LATERAL: VERIFICACIÓN OFICIAL DIRECTA ---
 with st.sidebar:
-    st.title("🏛️ Verificación Nacional")
-    st.markdown("Enlaces directos a los formularios oficiales de consulta.")
+    st.title("Verificación Nacional")
+    st.markdown("Accesos a portales gubernamentales.")
     
     st.divider()
     
     # Sección Colombia
-    st.subheader("🇨🇴 Colombia")
+    st.subheader("República de Colombia")
     st.markdown("""
     * 🔗 [Policía Nacional (Penales)](https://antecedentes.policia.gov.co:7005/WebJudicial/)
     * 🔗 [Contraloría (Resp. Fiscal)](https://www.contraloria.gov.co/control-fiscal/responsabilidad-fiscal/certificado-de-antecedentes-fiscales)
@@ -19,7 +19,7 @@ with st.sidebar:
     st.divider()
     
     # Sección Ecuador
-    st.subheader("🇪🇨 Ecuador")
+    st.subheader("República del Ecuador")
     st.markdown("""
     * 🔗 [Min. del Interior (Penales)](https://certificados.ministeriodelinterior.gob.ec/gestorcertificados/antecedentes/)
     * 🔗 [Función Judicial (Causas / SATJE)](http://consultas.funcionjudicial.gob.ec/informacionjudicial/public/informacion.jsf)
@@ -30,25 +30,27 @@ import requests
 # 1. Configuración de página limpia y amplia
 st.set_page_config(page_title="Plataforma AML", page_icon="🛡️", layout="wide")
 
-# 2. Pequeño ajuste CSS para suavizar el botón
+# 2. Ajuste CSS Corporativo (Botones más formales y sobrios)
 st.markdown("""
 <style>
     div.stButton > button:first-child {
-        background-color: #2563eb;
+        background-color: #0F172A; /* Azul noche casi negro */
         color: white;
-        border-radius: 8px;
+        border-radius: 4px; /* Bordes menos redondeados, más serios */
         padding: 10px 24px;
-        font-weight: bold;
+        font-weight: 600;
+        border: none;
     }
     div.stButton > button:first-child:hover {
-        background-color: #1d4ed8;
+        background-color: #1D4ED8; /* Azul rey al pasar el mouse */
+        color: white;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# 3. Encabezado moderno
-st.title("🛡️ Plataforma de Cumplimiento (AML & Sanciones)")
-st.markdown("Consulta inteligente en listas restrictivas globales: **OFAC, ONU, Interpol y OpenSanctions**.")
+# 3. Encabezado Corporativo (Menos emojis, texto más ejecutivo)
+st.title("Plataforma de Debida Diligencia y AML")
+st.markdown("Sistema automatizado de cruce de datos contra listas restrictivas globales (OFAC, ONU, Interpol).")
 st.divider()
 
 # 4. Formulario centrado y estructurado en columnas

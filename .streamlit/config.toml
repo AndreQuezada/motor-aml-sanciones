@@ -1,8 +1,12 @@
 [theme]
-primaryColor = "#E63946"
-backgroundColor = "#121212"
-secondaryBackgroundColor = "#1E1E1E"
-textColor = "#FFFFFF"
+# Azul corporativo profundo (tipo banco)
+primaryColor = "#1D4ED8" 
+# Fondo principal blanco/gris muy claro
+backgroundColor = "#F8F9FA" 
+# Fondo de la barra lateral (gris pizarra suave)
+secondaryBackgroundColor = "#E2E8F0" 
+# Texto gris oscuro (casi negro, más elegante)
+textColor = "#0F172A" 
 font = "sans serif"
 
 [server]
