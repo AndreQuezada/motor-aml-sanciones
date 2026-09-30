@@ -62,7 +62,10 @@ st.markdown("""
 
 # 3. Encabezado Corporativo 
 st.title("Plataforma de Debida Diligencia y AML")
-st.markdown("Sistema automatizado de cruce de datos contra listas restrictivas globales (OFAC, ONU, Interpol, EU).")
+st.markdown("""
+Sistema automatizado de cruce de datos contra listas restrictivas y vinculantes a nivel global: 
+**Oficina de Control de Activos Extranjeros (OFAC SDN & Non-SDN), Consejo de Seguridad de las Naciones Unidas (ONU), Organización Internacional de Policía Criminal (Interpol - Notificaciones Rojas), Sanciones Financieras de la Unión Europea (UE), Departamento de Estado de EE.UU. (Organizaciones Terroristas Extranjeras - FTO) y más de 15 agencias gubernamentales internacionales consolidadas.**
+""")
 st.divider()
 
 # 4. Formulario centrado y estructurado en columnas
