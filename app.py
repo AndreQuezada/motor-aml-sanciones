@@ -6,13 +6,13 @@ st.set_page_config(page_title="Plataforma AML", page_icon="🛡️", layout="wid
 
 # --- BARRA LATERAL: VERIFICACIÓN OFICIAL DIRECTA ---
 with st.sidebar:
-    st.title("🏛️ Enlaces Oficiales")
+    st.title("Enlaces Oficiales")
     st.markdown("Portales gubernamentales e internacionales para validación manual de debida diligencia.")
     
     st.divider()
 
     # Sección Internacionales
-    st.subheader("🌍 Internacionales")
+    st.subheader("Internacionales")
     st.markdown("""
     * 🔗 [OFAC (Sanciones EE.UU.)](https://sanctionssearch.ofac.treas.gov/)
     * 🔗 [ONU (Lista Consolidada)](https://www.un.org/securitycouncil/es/content/un-sc-consolidated-list)
