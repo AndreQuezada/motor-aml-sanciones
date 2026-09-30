@@ -1,14 +1,30 @@
 import streamlit as st
-# --- BARRA LATERAL: VERIFICACIÓN OFICIAL DIRECTA ---
+import requests
+
+# 1. Configuración de página (SIEMPRE debe ser el primer comando de Streamlit)
+st.set_page_config(page_title="Plataforma AML", page_icon="🛡️", layout="wide")
+
 # --- BARRA LATERAL: VERIFICACIÓN OFICIAL DIRECTA ---
 with st.sidebar:
-    st.title("Verificación Nacional")
-    st.markdown("Accesos a portales gubernamentales.")
+    st.title("🏛️ Enlaces Oficiales")
+    st.markdown("Portales gubernamentales e internacionales para validación manual de debida diligencia.")
     
+    st.divider()
+
+    # Sección Internacionales
+    st.subheader("🌍 Internacionales")
+    st.markdown("""
+    * 🔗 [OFAC (Sanciones EE.UU.)](https://sanctionssearch.ofac.treas.gov/)
+    * 🔗 [ONU (Lista Consolidada)](https://www.un.org/securitycouncil/es/content/un-sc-consolidated-list)
+    * 🔗 [Interpol (Notificaciones Rojas)](https://www.interpol.int/es/Como-trabajamos/Notificaciones/Notificaciones-rojas/Ver-las-notificaciones-rojas)
+    * 🔗 [Unión Europea (Sanciones)](https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=OJ:L:2022:025:TOC)
+    * 🔗 [State Dept (FTO Terrorismo)](https://www.state.gov/foreign-terrorist-organizations/)
+    """)
+
     st.divider()
     
     # Sección Colombia
-    st.subheader("República de Colombia")
+    st.subheader("🇨🇴 Colombia")
     st.markdown("""
     * 🔗 [Policía Nacional (Penales)](https://antecedentes.policia.gov.co:7005/WebJudicial/)
     * 🔗 [Contraloría (Resp. Fiscal)](https://www.contraloria.gov.co/control-fiscal/responsabilidad-fiscal/certificado-de-antecedentes-fiscales)
@@ -19,16 +35,12 @@ with st.sidebar:
     st.divider()
     
     # Sección Ecuador
-    st.subheader("República del Ecuador")
+    st.subheader("🇪🇨 Ecuador")
     st.markdown("""
     * 🔗 [Min. del Interior (Penales)](https://certificados.ministeriodelinterior.gob.ec/gestorcertificados/antecedentes/)
     * 🔗 [Función Judicial (Causas / SATJE)](http://consultas.funcionjudicial.gob.ec/informacionjudicial/public/informacion.jsf)
     * 🔗 [ANT (Multas de Tránsito)](https://consultaweb.ant.gob.ec/PortalWEB/paginas/clientes/clp_criterio_consulta.jsp)
     """)
-import requests
-
-# 1. Configuración de página limpia y amplia
-st.set_page_config(page_title="Plataforma AML", page_icon="🛡️", layout="wide")
 
 # 2. Ajuste CSS Corporativo (Botones más formales y sobrios)
 st.markdown("""
@@ -48,9 +60,9 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 3. Encabezado Corporativo (Menos emojis, texto más ejecutivo)
+# 3. Encabezado Corporativo 
 st.title("Plataforma de Debida Diligencia y AML")
-st.markdown("Sistema automatizado de cruce de datos contra listas restrictivas globales (OFAC, ONU, Interpol).")
+st.markdown("Sistema automatizado de cruce de datos contra listas restrictivas globales (OFAC, ONU, Interpol, EU).")
 st.divider()
 
 # 4. Formulario centrado y estructurado en columnas
@@ -60,7 +72,6 @@ with col_centro:
     with st.form("formulario_busqueda", clear_on_submit=False):
         st.subheader("🔍 Datos de Búsqueda")
         
-        # Ponemos nombre y apellido uno al lado del otro
         col_nom, col_ape = st.columns(2)
         with col_nom:
             nombre = st.text_input("Nombre(s) *", placeholder="Ej: Nicolas")
@@ -88,46 +99,61 @@ if boton:
                 
                 if res.status_code == 200:
                     datos = res.json()
-                    st.divider() # Línea separadora antes de los resultados
+                    st.divider() 
                     
                     if datos["estado"] == "LIMPIO":
-                        # Mensaje de éxito gigante si no hay coincidencias
-                        st.success(f"✅ **{datos['mensaje']}** - No se encontraron registros en las listas restrictivas para: {nombre} {apellido}.")
-                        st.balloons()
+                        st.success(f"✅ ESTADO: APROBADO - No se encontraron registros en las listas restrictivas vinculantes para: {nombre} {apellido}.")
                     else:
-                        st.error(f"🚨 **ALERTA:** {datos['mensaje']}")
-                        st.markdown(f"### Resultados encontrados para: *{nombre} {apellido}*")
+                        st.error("🚨 ESTADO: ALERTA - Se encontraron posibles coincidencias en las bases de datos.")
                         st.markdown("<br>", unsafe_allow_html=True)
                         
-                        # Mostramos cada coincidencia como una "tarjeta" limpia
-                        for idx, coincidencia in enumerate(datos["coincidencias"]):
+                        # 1. AGRUPAR LOS REGISTROS POR NOMBRE
+                        registros_agrupados = {}
+                        for c in datos["coincidencias"]:
+                            nombre_sancionado = c["nombre_sancionado"]
+                            if nombre_sancionado not in registros_agrupados:
+                                registros_agrupados[nombre_sancionado] = {
+                                    "similitud": c["similitud_porcentaje"],
+                                    "registros": []
+                                }
+                            registros_agrupados[nombre_sancionado]["registros"].append(c["detalles"])
+                        
+                        # 2. DESPLEGAR INTERFAZ CON PESTAÑAS (TABS)
+                        for nombre_match, info in registros_agrupados.items():
                             with st.container():
-                                st.subheader(f"Objetivo #{idx + 1}: {coincidencia['nombre_sancionado']}")
+                                st.markdown(f"### ⚠️ Objetivo: {nombre_match}")
                                 
-                                # Barra de progreso visual para la similitud
-                                st.caption(f"Nivel de Similitud: {coincidencia['similitud_porcentaje']}%")
-                                st.progress(int(coincidencia['similitud_porcentaje']))
+                                # Barra de progreso visual
+                                st.caption(f"Nivel de Similitud: {info['similitud']}%")
+                                st.progress(int(info['similitud']))
                                 
-                                # Dividimos la información legal en dos cajas de colores suaves
-                                col_info1, col_info2 = st.columns(2)
-                                with col_info1:
-                                    st.error(f"**⚖️ Motivo de Inclusión:**\n\n{coincidencia['detalles'].get('motivo_delito', '')}")
-                                with col_info2:
-                                    st.info(f"**🌐 Fuentes Internacionales:**\n\n{coincidencia['detalles'].get('fuente', '')}")
+                                # Nombres de las fuentes para crear las pestañas
+                                nombres_fuentes = [detalle["fuente"] for detalle in info["registros"]]
                                 
-                                # El resumen en un cuadro verde de éxito (fácil de leer)
-                                st.success(f"**📝 Resumen de Perfil:**\n\n{coincidencia['detalles'].get('resumen_espanol', '')}")
+                                # Crear pestañas
+                                pestañas = st.tabs(nombres_fuentes)
                                 
-                                # El dato feo/crudo escondido por defecto
-                                with st.expander("Ver registro técnico original (Inglés)"):
-                                    st.write(f"**Programa Legal:** {coincidencia['detalles'].get('programas_originales', '')}")
-                                    st.write(coincidencia['detalles'].get('antecedentes_original', ''))
-                                
-                                st.divider() # Línea entre diferentes resultados
+                                # Llenar cada pestaña
+                                for i, pestaña in enumerate(pestañas):
+                                    with pestaña:
+                                        detalle = info["registros"][i]
+                                        
+                                        col_info1, col_info2 = st.columns(2)
+                                        with col_info1:
+                                            st.error(f"**⚖️ Motivos / Delitos:**\n\n{detalle.get('motivo_delito', 'No especificado')}")
+                                        with col_info2:
+                                            st.info(f"**🌐 Fuente Original:**\n\n{detalle.get('fuente', 'Desconocida')}")
+                                        
+                                        st.success(f"**📝 Resumen de Perfil:**\n\n{detalle.get('resumen_espanol', 'No hay resumen disponible.')}")
+                                        
+                                        with st.expander("Ver registro técnico original (Inglés)"):
+                                            st.write(f"**Programa Legal:** {detalle.get('programas_originales', '')}")
+                                            st.write(detalle.get('antecedentes_original', ''))
+                                        
+                            st.divider() # Línea entre diferentes criminales
                 else:
                     st.error(f"🚨 Error del Cerebro (Código {res.status_code}): {res.text}")
             
-            # EL ESCUDO CONTRA CONGELAMIENTOS INFINITOS
             except requests.exceptions.Timeout:
                 st.warning("⏳ El servidor central se está despertando tras un periodo de inactividad. Por favor, espera 5 segundos y vuelve a darle clic a Buscar.")
             except Exception as e:
